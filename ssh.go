@@ -50,7 +50,7 @@ func (sshInfo *SSHInfo) SSHIntoNode() (*goph.Client, error) {
 	}
 
 	// Defer closing the network connection.
-	defer client.Close()
+	//defer client.Close()
 
 	return client, err
 }
