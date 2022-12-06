@@ -1,6 +1,6 @@
 # Natural Deploy 
 
-Work in progress: Will continue from August 2022. 
+## Work in progress: Will continue from late July 2023. This is due heavy workload on my end and other priorities.
 
 Its Go way of doing Ansibles:
 
