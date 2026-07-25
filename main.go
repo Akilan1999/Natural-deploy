@@ -23,24 +23,36 @@ type Task struct {
 	TaskFile string
 	// This needs to be a bash script to kill a task
 	KillTaskFile string
+	Comment      string
 	Active       bool
 }
 
-func (task *Task) CreateTask() error {
+func (task *Task) MakeConnection() (*goph.Client, error) {
 	// Get config information of P2PRC
 	Config, err := config.ConfigInit(nil, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// SSH port
 	SSHPort, err := strconv.Atoi(task.NodeInfo.BareMetalSSHPort)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// SSH into the node and deploy bash
 	client, err := goph.New(task.NodeInfo.MachineUsername, task.NodeInfo.Ipv4, goph.WithKeyFile(Config.PrivateKeyFile, ""), goph.WithPort(uint(SSHPort)), goph.WithInsecureIgnoreHostKey())
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}
+
+func (task *Task) CreateTask() error {
+
+	// SSH into the intended node
+	client, err := task.MakeConnection()
 	if err != nil {
 		return err
 	}
@@ -62,23 +74,30 @@ func (task *Task) CreateTask() error {
 
 	path = path + "/p2prc-task/" + task.TaskFile
 
+	fmt.Println("Uploading the file")
+
 	// upload the file to directory
 	err = client.Upload(task.TaskFile, path)
 	if err != nil {
 		return err
 	}
 
-	// run the task
-	//_, err = client.Run("cd ~/p2prc-task/ && sh " + task.TaskFile)
-	//
-	//if err != nil {
-	//    return err
-	//}
+	fmt.Println("Running the file")
+
+	out, err = client.Run("cd ~/p2prc-task/ && sh " + task.TaskFile)
+
+	fmt.Println(string(out))
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Opening the ports")
 
 	for i, port := range task.ExposedPorts {
 		// Creates port on the node running P2PRC
 		task.ExposedPorts[i], err = abstractions.MapPort(port.PortNo, "", task.NodeInfo.Ipv4+":"+task.NodeInfo.ServerPort, false)
-		fmt.Println(task.ExposedPorts[i])
+		fmt.Println(task.ExposedPorts[i].PortNo)
 		if err != nil {
 			return err
 		}
@@ -91,7 +110,42 @@ func (task *Task) CreateTask() error {
 }
 
 func (task *Task) KillTask() error {
-	// Run kill script and send feedback
+	// SSH into the intended node
+	client, err := task.MakeConnection()
+	if err != nil {
+		return err
+	}
+
+	// Defer closing the network connection.
+	defer client.Close()
+
+	// Get home directory path of the remote machine
+	out, err := client.Run("pwd")
+	if err != nil {
+		return err
+	}
+
+	path := strings.TrimSuffix(string(out), "\n")
+
+	path = path + "/p2prc-task/" + task.KillTaskFile
+
+	// upload the kill file to directory
+	err = client.Upload(task.KillTaskFile, path)
+	if err != nil {
+		return err
+	}
+
+	// Run the kill file
+	out, err = client.Run("cd ~/p2prc-task/ && sh " + task.KillTaskFile)
+
+	fmt.Println(string(out))
+
+	if err != nil {
+		return err
+	}
+
+	task.Comment = "Server killed"
+
 	return nil
 }
 
@@ -138,6 +192,7 @@ func main() {
 	var task Task
 	task.Name = "Test"
 	task.TaskFile = "test.sh"
+	task.KillTaskFile = "kill.sh"
 
 	// Get all node information
 	table, err := p2p.ReadIpTable()
@@ -168,6 +223,17 @@ func main() {
 	// ---------------------------------------------------------
 
 	err = task.CreateTask()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println("Server running for 10 seconds")
+
+	// Create a 10 second delay from mapping port
+	time.Sleep(10 * time.Second)
+
+	err = task.KillTask()
 	if err != nil {
 		fmt.Println(err)
 		return
