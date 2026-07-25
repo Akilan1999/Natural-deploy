@@ -1,5 +1,9 @@
 # Natural Deploy
 
+## DO NOT LET THIS MAN ROB YOU! 
+<img width="980" height="979" alt="image" src="https://github.com/user-attachments/assets/f1aee853-6178-4f53-a2fc-2a2bb21baa0e" />
+
+
 ## Work in progress: Will continue from late July 2023. This is due heavy workload on my end and other priorities.
 
 Its Go way of doing Ansibles:
