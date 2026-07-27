@@ -12,7 +12,7 @@ func main() {
 	fmt.Println("Starting server procedure")
 	fmt.Println(".................................")
 	// Start P2PRC instance
-	natural_deploy.RunAsP2PRCNode()
+	//natural_deploy.RunAsP2PRCNode()
 
 	fmt.Println("Starting server (Please wait for 7 to 12 seconds)")
 	fmt.Println(".................................")
