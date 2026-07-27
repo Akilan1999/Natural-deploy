@@ -31,15 +31,15 @@ func CommonSetup(MachineName string) error {
 	return nil
 }
 
-func CreateRootNode(MachineName string) error {
+func CreateRootNode(MachineName string) (*p2p.IpAddress, error) {
 	err := CommonSetup(MachineName)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	Config, err := config.ConfigInit(nil, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// Root nodes cannot be behind NAT
@@ -47,7 +47,7 @@ func CreateRootNode(MachineName string) error {
 
 	err = Config.WriteConfig()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// ---------------- creating a root node ------------------
@@ -56,7 +56,7 @@ func CreateRootNode(MachineName string) error {
 
 	rootnode.Ipv4, err = p2p.CurrentPublicIP()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	rootnode.ServerPort = Config.ServerPort
@@ -78,7 +78,7 @@ func CreateRootNode(MachineName string) error {
 	// Creates the root node entry
 	generate.GenerateIPTableFile(rootnodes.IpAddress)
 
-	return nil
+	return &rootnode, nil
 }
 
 type RootNode struct {
@@ -153,12 +153,10 @@ func CreateTaskMachine(MachineName string, node *RootNode) error {
 	return nil
 }
 
-func RunDaemon() {
-	abstractions.Start()
-}
-
-// RunAsP2PRCNode Runs node as P2PRC instance
-func RunAsP2PRCNode(MachineName string) error {
-
+func RunDaemon() error {
+	_, err := abstractions.Start()
+	if err != nil {
+		return err
+	}
 	return nil
 }

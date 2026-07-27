@@ -1,1 +1,14 @@
-DemoServer
+DemoTask
+RootNode
+RegularServer
+
+*.lock
+p2p/
+server/
+client/
+config.json
+
+# Ignore public and private keys
+p2prc.publicKey
+p2prc.privateKey
+p2prc.PublicKeyBareMetal

@@ -5,17 +5,16 @@ import (
 	natural_deploy "github.com/Akilan1999/P2PRC-natural-deploy"
 	"github.com/Akilan1999/p2p-rendering-computation/client"
 	"github.com/Akilan1999/p2p-rendering-computation/p2p"
+	"os"
 	"time"
 )
 
 func main() {
-	fmt.Println("Starting server procedure")
-	fmt.Println(".................................")
-	// Start P2PRC instance
-	//natural_deploy.RunAsP2PRCNode()
-
-	fmt.Println("Starting server (Please wait for 7 to 12 seconds)")
-	fmt.Println(".................................")
+	_, err := os.Stat("Task.lock")
+	if err != nil {
+		natural_deploy.CreateTaskMachine("Test-2", nil)
+		os.Create("Task.lock")
+	}
 
 	// Create a 5 second delay from mapping port
 	time.Sleep(5 * time.Second)
@@ -30,16 +29,17 @@ func main() {
 	table, err := p2p.ReadIpTable()
 	if err != nil {
 		fmt.Println(err)
+		os.Exit(1)
 		return
 	}
 
 	fmt.Println("IP table read")
 
 	// Searching for the information of a particular
-	// node information
+	// node information (In this example Test-2 node)
 	var machineInfo p2p.IpAddress
 	for i, _ := range table.IpAddress {
-		if table.IpAddress[i].Name == "Test" {
+		if table.IpAddress[i].Name == "Test-1" {
 			machineInfo = table.IpAddress[i]
 		}
 	}
@@ -57,10 +57,9 @@ func main() {
 	err = task.CreateTask()
 	if err != nil {
 		fmt.Println(err)
+		os.Exit(1)
 		return
 	}
-
-	fmt.Println("Server running for 10 seconds")
 
 	// Create a 10 second delay from mapping port
 	time.Sleep(10 * time.Second)
@@ -68,6 +67,7 @@ func main() {
 	err = task.KillTask()
 	if err != nil {
 		fmt.Println(err)
+		os.Exit(1)
 		return
 	}
 
