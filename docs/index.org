@@ -250,3 +250,9 @@ host.
     }
 
 #+end_src
+- Compile server.go
+  #+begin_src bash
+     go build task.go
+     # Run the binary as a background process
+     ./task &
+  #+end_src
