@@ -1,0 +1,78 @@
+* Natural deploy
+
+** Motivation
+Have you ever felt when using any declarative type of program
+that is used for deployment. Its really unnatural to use (i.e you are a YAML developer). This is in
+comparison to using any programming language (Which has advanced static type checkers, error diagnosis etc...).
+
+The 2nd issue is it's really hard to setup servers and can only work with nodes which have public IPs. Most orchestration
+tools are built on the basis to use static IPs and fixed ports. 
+
+The effect of this move is that you can easily get vendor locked and you are less likely to choose the economical
+choice of owning your own hardware. We have lesser gratefullness of how complex problems were abstracted in simple tools
+like FTP, GIT, OrgMode or the design principles of Unix utilities.
+
+The aim of "Natural deploy" is to be library build on top of P2PRC to make it as easy as running a binary to deloy your
+custom tasks to your servers. This will gives you the flexibility to truly customise building your orchestration layer to
+run your programs across your cluster of servers which can be situated anywhere.
+
+** How to install
+The only requirement if you are compiling from source is to have the Go compiler.
+We will show this example by demonstrating a simple example which consists of 3 computers:
+
+*** The first computer (Root node):
+Which is has a static public address. This is required to traverse traffic for your computers
+behind NAT.
+- Create a file called root.go
+- Copy the following below into root.go
+#+begin_src go
+package main
+
+import (
+    "fmt"
+    natural_deploy "github.com/Akilan1999/P2PRC-natural-deploy"
+    "github.com/Akilan1999/p2p-rendering-computation/client"
+    "os"
+)
+
+func main() {
+
+    // Checking if the lock file exists
+    // if not configures the root node
+    _, err := os.Stat("Root.lock")
+    if err != nil {
+        // Create the root node configuration
+        rootNode, err := natural_deploy.CreateRootNode("RootNode")
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
+        }
+
+        fmt.Println("----- Root Node information -------")
+        client.PrettyPrint(rootNode)
+        fmt.Println("-----------------------------------")
+        fmt.Println("Daemon starting .....")
+
+        os.Create("Root.lock")
+    }
+
+    err = natural_deploy.RunDaemon()
+    if err != nil {
+        fmt.Println(err)
+        os.Exit(1)
+        return
+    }
+    fmt.Println("Daemon started .....")
+
+    for {
+
+    }
+}
+#+end_src
+- Compile root.go
+#+begin_src bash
+  go build root.go
+  # Run the binary
+  ./root
+#+end_src
+
