@@ -1,5 +1,8 @@
 # Natural Deploy
 
+## Documentation and setup
+- https://github.com/Akilan1999/Natural-deploy/blob/master/docs/index.org
+
 ## Motivation:
 Have you ever felt when using any declarative type of program that is used for deployment. Its really unnatural to use (i.e you are a YAML developer). This is in comparison to using any programming language (Which has advanced static type checkers, error diagnosis etc…).
 
@@ -12,5 +15,4 @@ The aim of “Natural deploy” is to be library build on top of P2PRC to make i
 ## The Solution:
 <img width="778" height="834" alt="Proposal" src="https://github.com/user-attachments/assets/4ce16823-3be2-4b89-924c-94331e9a627e" />
 
-## Documentation
-- https://github.com/Akilan1999/Natural-deploy/blob/master/docs/index.org
+
