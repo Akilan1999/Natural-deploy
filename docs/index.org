@@ -72,7 +72,181 @@ func main() {
 - Compile root.go
 #+begin_src bash
   go build root.go
-  # Run the binary
-  ./root
+  # Run the binary as a background process
+  ./root &
 #+end_src
 
+- Store the output
+ #+begin_src json
+    {
+       "Name": "RootNode",
+       "MachineUsername": "",
+       "IPV4": "<public ipv4 address>", // The public address of your root server
+       "IPV6": "",
+       "Latency": 0,
+       "Download": 0,
+       "Upload": 0,
+       "ServerPort": "8088", // The default port of the root node 
+       "UDPServerPort": "",
+       "BareMetalSSHPort": "22",
+       "NAT": false,
+       "EscapeImplementation": "",
+       "ProxyServer": false,
+       "UnSafeMode": false,
+       "PublicKey": "",
+       "CustomInformation": ""
+    }
+ #+end_src
+
+*** The 2nd computer (The server behind NAT)
+This could for instance an old laptop which you would want to bring back to life.
+
+- Create the file server.go
+- Add the following to the server.go file. We are going call this server "Test-Server".
+#+begin_src go
+  package main
+
+import (
+	"fmt"
+	natural_deploy "github.com/Akilan1999/P2PRC-natural-deploy"
+	"os"
+)
+
+func main() {
+	_, err := os.Stat("Regular.lock")
+	if err != nil {
+		// Create the root node to be added
+		var rootnode natural_deploy.RootNode
+		// make sure to fill in "<>" area with the appropriate information
+		rootnode.IPAddress = "<public ipv4 address>"
+		rootnode.Port = "<ServerPort>" // (i.e 8088 by default) 
+
+		err := natural_deploy.CreateRegularNode("Test-Server", &rootnode)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+			return
+		}
+		os.Create("Regular.lock")
+	}
+
+	// Start the daemon
+	err = natural_deploy.RunDaemon()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+		return
+	}
+
+	for {
+
+	}
+}
+#+end_src
+
+- Compile server.go
+  #+begin_src bash
+    go build server.go
+    # Run the binary as a background process
+    ./server &
+ #+end_src
+
+*** The 3rd Computer (Task machine)
+This is can be your current laptop which can remotely deploy tasks to your self hosted server.
+We are going to run a simple python server on the remote machine called "Test-Server". We will
+start the task which will deploy the python server from our local machine to the "Test-Server"
+machine which will then start the server and will internally call P2PRC function calls to provide
+an static ip and port number from the Root node. Therefore escaping NAT which allows you to self
+host. 
+- Create the deploy script which we will call "test.sh" (The python server runs locally in 8000).
+#+begin_src bash
+  nohup python3 -m http.server 8000 > server.log 2>&1 &
+#+end_src
+- Create a script to kill the deployed python server. We will call this "kill.sh".
+#+begin_src bash
+  kill -9 $(lsof -t -i:8000)
+#+end_src
+- Create the file task.go
+- Add the following to task.go
+#+begin_src go
+      package main
+
+    import (
+        "fmt"
+        natural_deploy "github.com/Akilan1999/P2PRC-natural-deploy"
+        "github.com/Akilan1999/p2p-rendering-computation/client"
+        "github.com/Akilan1999/p2p-rendering-computation/p2p"
+        "os"
+        "time"
+    )
+
+    func main() {
+        _, err := os.Stat("Task.lock")
+        if err != nil {
+            // If you want to add a custom root node
+            var rootnode natural_deploy.RootNode
+            // make sure to fill in "<>" area with the appropriate information
+            rootnode.IPAddress = "<public ipv4 address>"
+            rootnode.Port = "<ServerPort>"
+            // Name of the task machine
+            natural_deploy.CreateTaskMachine("Task", &rootnode) 
+        }
+
+        // Create a 5 second delay from mapping port
+        time.Sleep(5 * time.Second)
+
+        // ------------------- Create a task -----------------
+        var task natural_deploy.Task
+        task.Name = "Test"
+        task.TaskFile = "test.sh"
+        task.KillTaskFile = "kill.sh"
+
+        // Get all node information
+        table, err := p2p.ReadIpTable()
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
+            return
+        }
+
+        fmt.Println("IP table read")
+
+        // Searching for the information of a particular
+        // node information (In this example Test-2 node)
+        var machineInfo p2p.IpAddress
+        for i, _ := range table.IpAddress {
+            if table.IpAddress[i].Name == "Test-1" {
+                machineInfo = table.IpAddress[i]
+            }
+        }
+
+        fmt.Println(machineInfo)
+
+        // Allocate ports
+        var port client.ResponseMAPPort
+        port.PortNo = "8000"
+        task.ExposedPorts = append(task.ExposedPorts, &port)
+
+        task.NodeInfo = &machineInfo
+        // ---------------------------------------------------------
+
+        err = task.CreateTask()
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
+            return
+        }
+
+        // Create a 10 second delay from mapping port
+        time.Sleep(10 * time.Second)
+
+        err = task.KillTask()
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
+            return
+        }
+
+    }
+
+#+end_src
