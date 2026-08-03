@@ -47,14 +47,14 @@ func main() {
 	task.KillTaskFile = "kill.sh"
 
 	var err error
-	task.NodeInfo, err = natural_deploy.SearchMachine("Test-2")
+	task.NodeInfo, err = natural_deploy.SearchMachine("Test-Server")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
 	for err != nil {
-		task.NodeInfo, err = natural_deploy.SearchMachine("Test-2")
+		task.NodeInfo, err = natural_deploy.SearchMachine("Test-Server")
 		if err != nil {
 			fmt.Println(err)
 			// os.Exit(1)
