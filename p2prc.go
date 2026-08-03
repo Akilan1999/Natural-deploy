@@ -1,6 +1,7 @@
 package natural_deploy
 
 import (
+	"errors"
 	"github.com/Akilan1999/p2p-rendering-computation/abstractions"
 	"github.com/Akilan1999/p2p-rendering-computation/config"
 	"github.com/Akilan1999/p2p-rendering-computation/config/generate"
@@ -151,6 +152,21 @@ func CreateTaskMachine(MachineName string, node *RootNode) error {
 	}
 
 	return nil
+}
+
+// SearchMachine search for a machine on your p2p network
+func SearchMachine(MachineName string) (*p2p.IpAddress, error) {
+	table, err := p2p.ReadIpTable()
+	if err != nil {
+		return nil, err
+	}
+
+	for i, _ := range table.IpAddress {
+		if table.IpAddress[i].Name == MachineName {
+			return &table.IpAddress[i], nil
+		}
+	}
+	return nil, errors.New("machine name not found")
 }
 
 func RunDaemon() error {

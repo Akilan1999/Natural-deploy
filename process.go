@@ -5,6 +5,7 @@ import (
 	"github.com/Akilan1999/p2p-rendering-computation/client"
 	"github.com/Akilan1999/p2p-rendering-computation/config"
 	"github.com/Akilan1999/p2p-rendering-computation/p2p"
+	"github.com/kr/pretty"
 	"github.com/melbahja/goph/v2"
 	"strconv"
 	"strings"
@@ -16,7 +17,7 @@ import (
 type Task struct {
 	Name         string
 	NodeInfo     *p2p.IpAddress
-	ExposedPorts []*client.ResponseMAPPort
+	ExposedPorts []*Ports
 	// This needs to be a bash script to start a task
 	TaskFile string
 	// This needs to be a bash script to kill a task
@@ -25,11 +26,13 @@ type Task struct {
 	Active       bool
 }
 
-type TaskTracker struct {
-	Tasks []*Task
+type Ports struct {
+	Port       string
+	DomainName string
+	Response   *client.ResponseMAPPort
 }
 
-var Tasks *TaskTracker
+var Tasks = make(map[string]*Task)
 
 func (task *Task) MakeConnection() (*goph.Client, error) {
 	// Get config information of P2PRC
@@ -90,7 +93,7 @@ func (task *Task) CreateTask() error {
 
 	for i, port := range task.ExposedPorts {
 		// Creates port on the node running P2PRC
-		task.ExposedPorts[i], err = abstractions.MapPort(port.PortNo, "", task.NodeInfo.Ipv4+":"+task.NodeInfo.ServerPort, false)
+		task.ExposedPorts[i].Response, err = abstractions.MapPort(port.Port, port.DomainName, task.NodeInfo.Ipv4+":"+task.NodeInfo.ServerPort, false)
 		if err != nil {
 			return err
 		}
@@ -101,6 +104,9 @@ func (task *Task) CreateTask() error {
 
 	// Append information to the task tracker
 	//Tasks.Tasks = append(Tasks.Tasks, task)
+
+	// register the task
+	task.RegisterTask()
 
 	return nil
 }
@@ -141,7 +147,35 @@ func (task *Task) KillTask() error {
 	task.Comment = "Server killed"
 	task.Active = false
 
+	// unregister the task
+	task.UnregisterTask()
+
 	return nil
+}
+
+// RegisterTask tracks the task through memory
+func (task *Task) RegisterTask() {
+	Tasks[task.Name] = task
+}
+
+// UnregisterTask Remove task from the map
+func (task *Task) UnregisterTask() {
+	delete(Tasks, task.Name)
+}
+
+// PrintTask Prints a particular task
+func (task *Task) PrintTask() {
+	pretty.Println(task)
+}
+
+// ViewTasks Search task based on the name provided.
+func ViewTasks(name string) (*Task, bool) {
+	task, ok := Tasks[name]
+	return task, ok
+}
+
+func PrintTasks() {
+	pretty.Println(Tasks)
 }
 
 // Tracker future task
