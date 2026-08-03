@@ -7,6 +7,7 @@ import (
 	"github.com/Akilan1999/p2p-rendering-computation/p2p"
 	"github.com/kr/pretty"
 	"github.com/melbahja/goph/v2"
+	"net/http"
 	"strconv"
 	"strings"
 )
@@ -178,26 +179,19 @@ func PrintTasks() {
 	pretty.Println(Tasks)
 }
 
-// Tracker future task
+// PingProgress Tracker future task
 // PingProgress Checks if the process is active or not
-//func (task *Task) PingProgress() bool {
-//
-//	for _, port := range task.ExposedPorts {
-//		l := time.Duration(2 * time.Second) // 2sec
-//		// Ping checked 3 times
-//		for i := 0; i < 3; i++ {
-//			sTime := time.Now()
-//			resp, err := http.Get(port.EntireAddress)
-//			fTime := time.Now()
-//			if err != nil || resp.StatusCode != 200 {
-//				return false
-//			}
-//			if fTime.Sub(sTime) < l {
-//				l = fTime.Sub(sTime)
-//			}
-//			resp.Body.Close()
-//		}
-//	}
-//
-//	return true
-//}
+// if a single port is not running the task is considered
+// as inactive.
+func (task *Task) PingProgress() bool {
+	for _, port := range task.ExposedPorts {
+		resp, err := http.Get("http://" + port.Response.EntireAddress)
+		if err != nil || resp.StatusCode != 200 {
+			task.Active = false
+			task.Comment = "Address " + port.Response.EntireAddress + " is not active, which belongs to task machine's local port " + port.Port
+			task.RegisterTask()
+			return false
+		}
+	}
+	return true
+}

@@ -1,4 +1,4 @@
-module github.com/Akilan1999/P2PRC-natural-deploy
+module github.com/Akilan1999/Natural-deploy
 
 go 1.25.0
 

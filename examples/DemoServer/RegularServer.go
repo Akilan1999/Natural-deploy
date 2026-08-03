@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	natural_deploy "github.com/Akilan1999/P2PRC-natural-deploy"
+	natural_deploy "github.com/Akilan1999/Natural-deploy"
 	"os"
 )
 

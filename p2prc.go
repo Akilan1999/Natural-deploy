@@ -111,7 +111,7 @@ func CreateRegularNode(MachineName string, node *RootNode) error {
 	// To allow other nodes in network to SSH into this machine using
 	// their private key
 	Config.BareMetal = true
-	Config.BareMetal = true
+	Config.UnsafeMode = true
 
 	err = Config.WriteConfig()
 	if err != nil {

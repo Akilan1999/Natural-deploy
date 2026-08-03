@@ -2,38 +2,43 @@ package main
 
 import (
 	"fmt"
-	natural_deploy "github.com/Akilan1999/P2PRC-natural-deploy"
+	natural_deploy "github.com/Akilan1999/Natural-deploy"
 	"os"
 	"time"
 )
 
 func main() {
-	_, err := os.Stat("Task.lock")
-	if err != nil {
-		// If you want to add a custom root node
-		//var rootnode natural_deploy.RootNode
-		// make sure to fill in "<>" area with the appropriate information
-		//rootnode.IPAddress = "<IPV4>"
-		//rootnode.Port = "<ServerPort>"
-		//natural_deploy.CreateTaskMachine("Test-2", &rootnode)
+	//_, err := os.Stat("Task.lock")
+	//if err != nil {
+	// If you want to add a custom root node
+	//var rootnode natural_deploy.RootNode
+	// make sure to fill in "<>" area with the appropriate information
+	//rootnode.IPAddress = "<IPV4>"
+	//rootnode.Port = "<ServerPort>"
+	//natural_deploy.CreateTaskMachine("Test-2", &rootnode)
 
-		// or
+	// or
 
-		// Test reasons
-		err := natural_deploy.CreateRegularNode("Test-2", nil)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-			return
-		}
-
-		os.Create("Task.lock")
-	}
-
-	natural_deploy.RunDaemon()
+	// Test reasons
+	//err := natural_deploy.CreateRegularNode("Test-2", nil)
+	//if err != nil {
+	//    fmt.Println(err)
+	//    os.Exit(1)
+	//    return
+	//}
+	//
+	//// os.Create("Task.lock")
+	////}
+	//
+	//err = natural_deploy.RunDaemon()
+	//if err != nil {
+	//    fmt.Println(err)
+	//    os.Exit(1)
+	//    return
+	//}
 
 	// Create a 5 second delay from mapping port
-	time.Sleep(3 * time.Second)
+	// time.Sleep(10 * time.Second)
 
 	// ------------------- Create a task -----------------
 	var task natural_deploy.Task
@@ -41,11 +46,19 @@ func main() {
 	task.TaskFile = "test.sh"
 	task.KillTaskFile = "kill.sh"
 
+	var err error
 	task.NodeInfo, err = natural_deploy.SearchMachine("Test-2")
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
 		return
+	}
+
+	for err != nil {
+		task.NodeInfo, err = natural_deploy.SearchMachine("Test-2")
+		if err != nil {
+			fmt.Println(err)
+			// os.Exit(1)
+		}
 	}
 
 	fmt.Println(task.NodeInfo)
@@ -54,8 +67,6 @@ func main() {
 	var port natural_deploy.Ports
 	port.Port = "8000"
 	task.ExposedPorts = append(task.ExposedPorts, &port)
-
-	// ---------------------------------------------------------
 
 	err = task.CreateTask()
 	if err != nil {
@@ -67,8 +78,14 @@ func main() {
 	// Adds tasks to the tracked list
 	task.RegisterTask()
 
+	natural_deploy.PrintTasks()
+
+	//fmt.Println(task.PingProgress())
+
 	// Create a 10 second delay from mapping port
-	time.Sleep(10 * time.Second)
+	time.Sleep(7 * time.Second)
+
+	fmt.Println(task.PingProgress())
 
 	natural_deploy.PrintTasks()
 
@@ -78,5 +95,11 @@ func main() {
 		os.Exit(1)
 		return
 	}
+
+	time.Sleep(4 * time.Second)
+
+	fmt.Println(task.PingProgress())
+
+	natural_deploy.PrintTasks()
 
 }
