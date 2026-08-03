@@ -1,35 +1,18 @@
 # Natural Deploy
 
-## DO NOT LET THIS MAN ROB YOU! 
-<img width="980" height="979" alt="image" src="https://github.com/user-attachments/assets/f1aee853-6178-4f53-a2fc-2a2bb21baa0e" />
-
-
-## Work in progress: Will continue from late July 2023. This is due heavy workload on my end and other priorities.
-
-Its Go way of doing Ansibles:
+## Documentation and setup
+- https://github.com/Akilan1999/Natural-deploy/blob/master/docs/index.org
 
 ## Motivation:
-Have you ever felt when using ansible or any declarative type of program that is used for deployment. Its really unnatural to use. This is in comparison to using any programming language. And running ansibles is another nightmare.
-More on Anibles cannot deploy on windows natively. There are more problems and my list goes on ...
+Have you ever felt when using any declarative type of program that is used for deployment. Its really unnatural to use (i.e you are a YAML developer). This is in comparison to using any programming language (Which has advanced static type checkers, error diagnosis etc…).
 
-## The Solution:
-Programming languages are powerful to act as an alternative to ansibles.
-I plan is to use a golang to run tasks on other computer and embed all the other files to the binary. So when running the binary it can unpack all the files and could run on the computer. Since this approach is pure Go its run on all architectures and platforms supported by golang.
+The 2nd issue is it’s really hard to setup servers and can only work with nodes which have public IPs. Most orchestration tools are built on the basis to use static IPs and fixed ports.
 
-The implementation to run them across different platforms is also pure Go and can could either use SSH to connect to the other machines or whatever windows uses for remote connection.# Natural Deploy
+The effect of this move is that you can easily get vendor locked and you are less likely to choose the economical choice of owning your own hardware. We have lesser gratefullness of how complex problems were abstracted in simple tools like FTP, GIT, OrgMode or the design principles of Unix utilities.
 
-## Work in progress: Will continue from late July 2023. This is due heavy workload on my end and other priorities.
-
-Its Go way of doing Ansibles:
-
-## Motivation:
-Have you ever felt when using ansible or any declarative type of program that is used for deployment. Its really unnatural to use. This is in comparison to using any programming language. And running ansibles is another nightmare.
-More on Anibles cannot deploy on windows natively. There are more problems and my list goes on ...
+The aim of “Natural deploy” is to be library build on top of P2PRC to make it as easy as running a binary to deloy your custom tasks to your servers. This will gives you the flexibility to truly customise building your orchestration layer to run your programs across your cluster of servers which can be situated anywhere.
 
 ## The Solution:
 <img width="778" height="834" alt="Proposal" src="https://github.com/user-attachments/assets/4ce16823-3be2-4b89-924c-94331e9a627e" />
 
-Programming languages are powerful to act as an alternative to ansibles.
-I plan is to use a golang to run tasks on other computer and embed all the other files to the binary. So when running the binary it can unpack all the files and could run on the computer. Since this approach is pure Go its run on all architectures and platforms supported by golang.
 
-The implementation to run them across different platforms is also pure Go and can could either use SSH to connect to the other machines or whatever windows uses for remote connection.
