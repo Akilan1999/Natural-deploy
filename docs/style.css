@@ -1,0 +1,40 @@
+#table-of-contents h2{
+    z-index: 200;
+    background-color: #2e8224;
+    text-align: center;
+    padding: 0.809em;
+    display: block;
+    color: #fcfcfc;
+    font-size: 100%;
+    margin-bottom: 0.809em;
+}
+
+#search-results li {
+    background-color: #4e4a4a;
+    color: white;
+    margin-bottom: 5px;
+    padding: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+h4,h5,h6{
+    color: #2e8224;
+    font-weight:300;
+}
+
+#table-of-contents ul.nav > li > a {
+    color: #5fcb64;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+#search-container {
+    padding: 12px;
+    background-color: #4e4a4a;
+}
+
+.video {
+    box-shadow: 10px 10px 25px rgba(0, 0, 0, 0.3);
+  }

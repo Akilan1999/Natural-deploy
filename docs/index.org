@@ -1,4 +1,9 @@
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/setup/html-theme-readtheorg.setup
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="style.css?version=1"/>
+
 * Natural deploy
+#+attr_html: :width 300px
+[[./NaturalDeploy.png]]
 
 ** Motivation
 Have you ever felt when using any declarative type of program
@@ -16,11 +21,11 @@ The aim of "Natural deploy" is to be library build on top of P2PRC to make it as
 custom tasks to your servers. This will gives you the flexibility to truly customise building your orchestration layer to
 run your programs across your cluster of servers which can be situated anywhere.
 
-** How to install
+* How to install
 The only requirement if you are compiling from source is to have the Go compiler.
 We will show this example by demonstrating a simple example which consists of 3 computers:
 
-*** The first computer (Root node):
+** The first computer (Root node):
 Which is has a static public address. This is required to traverse traffic for your computers
 behind NAT.
 - Create a file called root.go
@@ -98,7 +103,7 @@ func main() {
     }
  #+end_src
 
-*** The 2nd computer (The server behind NAT)
+** The 2nd computer (The server behind NAT)
 This could for instance an old laptop which you would want to bring back to life.
 
 - Create the file server.go
@@ -151,7 +156,7 @@ func main() {
     ./server &
  #+end_src
 
-*** The 3rd Computer (Task machine)
+** The 3rd Computer (Task machine)
 This is can be your current laptop which can remotely deploy tasks to your self hosted server.
 We are going to run a simple python server on the remote machine called "Test-Server". We will
 start the task which will deploy the python server from our local machine to the "Test-Server"
