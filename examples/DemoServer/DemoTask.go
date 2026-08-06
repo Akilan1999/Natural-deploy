@@ -53,14 +53,6 @@ func main() {
 		return
 	}
 
-	for err != nil {
-		task.NodeInfo, err = natural_deploy.SearchMachine("Test-Server")
-		if err != nil {
-			fmt.Println(err)
-			// os.Exit(1)
-		}
-	}
-
 	fmt.Println(task.NodeInfo)
 
 	// Allocate ports

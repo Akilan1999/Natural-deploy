@@ -3,7 +3,7 @@ module github.com/Akilan1999/Natural-deploy
 go 1.25.0
 
 require (
-	github.com/Akilan1999/p2p-rendering-computation v0.0.0-20260708234857-53d87f6691d3
+	github.com/Akilan1999/p2p-rendering-computation v0.0.0-20260805134124-98d20531747b
 	github.com/kr/pretty v0.3.0
 	github.com/melbahja/goph/v2 v2.0.2
 	github.com/urfave/cli/v2 v2.3.0
@@ -14,6 +14,9 @@ require (
 	github.com/Microsoft/go-winio v0.4.17-0.20210211115548-6eac466e5fa3 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20210428141323-04723f9f07d7 // indirect
 	github.com/acomagu/bufpipe v1.0.3 // indirect
+	github.com/apenella/go-ansible v1.1.0 // indirect
+	github.com/apenella/go-common-utils v0.1.1 // indirect
+	github.com/apenella/go-common-utils/error v0.0.0-20200917063805-34b0ed3c4ce1 // indirect
 	github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
@@ -31,6 +34,7 @@ require (
 	github.com/fatedier/kcp-go v2.0.4-0.20190803094908-fe8645b0a904+incompatible // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/gin-gonic/gin v1.6.3 // indirect
+	github.com/go-co-op/gocron/v2 v2.22.0 // indirect
 	github.com/go-git/gcfg v1.5.0 // indirect
 	github.com/go-git/go-billy/v5 v5.3.1 // indirect
 	github.com/go-git/go-git/v5 v5.4.2 // indirect
@@ -41,11 +45,13 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.3 // indirect
-	github.com/google/uuid v1.3.0 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/hashicorp/yamux v0.1.1 // indirect
+	github.com/ihciah/rust2go v0.0.0-20251105132719-caedb7aac7b2 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
+	github.com/jonboulle/clockwork v0.5.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kevinburke/ssh_config v0.0.0-20201106050909-4977a11b4351 // indirect
 	github.com/klauspost/cpuid/v2 v2.0.6 // indirect
@@ -73,6 +79,7 @@ require (
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.37.0 // indirect
 	github.com/prometheus/procfs v0.8.0 // indirect
+	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect

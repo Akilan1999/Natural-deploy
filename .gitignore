@@ -1,4 +1,24 @@
 P2PRC-natural-deploy
+docs/Deploy-Linux
+docs/Deploy
 .idea/
 log.txt
 *.html
+*.store
+*.lock
+
+# ------- Binaries to ignore --------
+DemoTask
+RootNode
+RegularServer
+
+# ----- P2PRC related settings -----
+p2p/
+server/
+client/
+config.json
+
+# Ignore public and private keys
+p2prc.publicKey
+p2prc.privateKey
+p2prc.PublicKeyBareMetal
