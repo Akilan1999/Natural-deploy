@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/gob"
 	"errors"
+	"fmt"
 	"github.com/Akilan1999/p2p-rendering-computation/abstractions"
 	"github.com/Akilan1999/p2p-rendering-computation/client"
 	"github.com/Akilan1999/p2p-rendering-computation/config"
@@ -20,9 +21,10 @@ import (
 // mode to ensure all node can ssh into each of them.
 
 type Task struct {
-	Name         string
-	NodeInfo     *p2p.IpAddress
-	ExposedPorts []*Ports
+	Name          string
+	DeployMachine string
+	NodeInfo      *p2p.IpAddress
+	ExposedPorts  []*Ports
 	// This needs to be a bash script to start a task
 	TaskFile string
 	// This needs to be a bash script to kill a task
@@ -50,6 +52,12 @@ func init() {
 func (task *Task) MakeConnection() (*goph.Client, error) {
 	// Get config information of P2PRC
 	Config, err := config.ConfigInit(nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// Search for the node on the network
+	task.NodeInfo, err = SearchMachine(task.DeployMachine)
 	if err != nil {
 		return nil, err
 	}
@@ -185,12 +193,14 @@ func (task *Task) KillTask() error {
 		return err
 	}
 
+	fmt.Println("run kill task")
+
 	// Run to kill the process
 	out, err = client.Run("cd ~/p2prc-task/" + task.Name + "/ && sh " + task.KillTaskFile)
 
-	if err != nil {
-		return err
-	}
+	//if err != nil {
+	//	return err
+	//}
 
 	task.Comment = "Server killed"
 	task.Active = false
@@ -198,9 +208,11 @@ func (task *Task) KillTask() error {
 	// Remove the task folder
 	out, err = client.Run("cd ~/p2prc-task/ && rm -rf " + task.Name)
 
-	if err != nil {
-		return err
-	}
+	fmt.Println("run kill process")
+
+	//if err != nil {
+	//	return err
+	//}
 
 	// unregister the task
 	task.UnregisterTask()

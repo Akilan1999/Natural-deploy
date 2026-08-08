@@ -64,12 +64,9 @@ func Deploy(Name string) error {
 	task.Name = Name
 	task.TaskFile = "run.sh"
 	task.KillTaskFile = "exit.sh"
+	task.DeployMachine = "Test-Server"
 
 	var err error
-	task.NodeInfo, err = natural_deploy.SearchMachine("Test-Server")
-	if err != nil {
-		return err
-	}
 
 	// Allocate ports
 	var port natural_deploy.Ports
@@ -106,6 +103,18 @@ func Deploy(Name string) error {
 		return err
 	}
 
+	fmt.Println("Uploading main picture")
+	err = task.SendFile("NaturalDeploy.png")
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Uploading style.css.....")
+	err = task.SendFile("style.css")
+	if err != nil {
+		return err
+	}
+
 	fmt.Println("Starting to run the task.....")
 	// Creates and runs the task
 	err = task.CreateTask()
@@ -115,6 +124,28 @@ func Deploy(Name string) error {
 
 	// Test to print out the process
 	ListProcess()
+
+	return nil
+}
+
+// Update changes to the docs, If a new file is added then just add here as:
+// err = task.SendFile("<file name>")
+func Update(Name string) error {
+	task, avaliable := natural_deploy.ViewTasks(Name)
+	if !avaliable {
+		return errors.New("task not found")
+	}
+
+	// Always send the (index.html and the style.css
+	err := task.SendFile("index.html")
+	if err != nil {
+		return err
+	}
+
+	err = task.SendFile("style.css")
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -141,6 +172,7 @@ func main() {
 	deploy := flag.Bool("deploy", false, "Deploy the webpage to the designated machine")
 	kill := flag.Bool("kill", false, "Kills the deployed task")
 	daemon := flag.Bool("daemon", false, "Starts the background process to learn about nodes in the network")
+	update := flag.Bool("update", false, "Updates the documentation content")
 	ls := flag.Bool("ls", false, "List processes")
 	port := flag.String("p", "8034", "port to serve on")
 	directory := flag.String("d", ".", "the directory of static file to host")
@@ -148,6 +180,15 @@ func main() {
 
 	if *deploy {
 		err := Deploy("nd-docs")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		return
+	}
+
+	if *update {
+		err := Update("nd-docs")
 		if err != nil {
 			fmt.Println(err)
 			return
