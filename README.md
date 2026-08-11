@@ -2,7 +2,7 @@
 <img width="1920" height="1560" alt="NaturalDeploy" src="https://github.com/user-attachments/assets/9d3d2a0a-f24e-485d-8993-77ecf644bb9b" />
 
 ## Documentation and setup
-- https://github.com/Akilan1999/Natural-deploy/blob/master/docs/index.org
+- https://nd.akilan.io
 
 ## Motivation:
 Have you ever felt when using any declarative type of program that is used for deployment. Its really unnatural to use (i.e you are a YAML developer). This is in comparison to using any programming language (Which has advanced static type checkers, error diagnosis etc…).
