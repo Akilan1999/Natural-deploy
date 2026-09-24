@@ -64,7 +64,7 @@ func Deploy(Name string) error {
 	task.Name = Name
 	task.TaskFile = "run.sh"
 	task.KillTaskFile = "exit.sh"
-	task.DeployMachine = "Test-Server"
+	task.DeployMachine = "p2prc-node-1-tGGl3RH"
 
 	var err error
 
