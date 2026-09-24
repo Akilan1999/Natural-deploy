@@ -11,218 +11,241 @@ listing file.
 package main
 
 import (
-	"bytes"
-	"errors"
-	"flag"
-	"fmt"
-	natural_deploy "github.com/Akilan1999/Natural-deploy"
-	"log"
-	"net/http"
-	"os"
-	"os/exec"
+    "bytes"
+    "errors"
+    "flag"
+    "fmt"
+    natural_deploy "github.com/Akilan1999/Natural-deploy"
+    "log"
+    "net/http"
+    "os"
+    "os/exec"
 )
 
 // Daemon Runs the daemon first to learn about nodes in the network
 func Daemon() error {
-	_, err := os.Stat("Task.lock")
-	if err != nil {
-		err := natural_deploy.CreateTaskMachine("Test-2", nil)
-		if err != nil {
-			return err
-		}
+    _, err := os.Stat("Task.lock")
+    if err != nil {
+        err := natural_deploy.CreateTaskMachine("Test-2", nil)
+        if err != nil {
+            return err
+        }
 
-		os.Create("Task.lock")
-	}
+        os.Create("Task.lock")
+    }
 
-	err = natural_deploy.RunDaemon()
-	if err != nil {
-		return err
-	}
+    err = natural_deploy.RunDaemon()
+    if err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // SelfCompileLinux Compile the current program for linux x86.
 func SelfCompileLinux() error {
-	cmd := exec.Command("sh", "compile.sh")
+    cmd := exec.Command("sh", "compile.sh")
 
-	var out bytes.Buffer
-	cmd.Stdout = &out
+    var out bytes.Buffer
+    cmd.Stdout = &out
 
-	err := cmd.Run()
+    err := cmd.Run()
 
-	if err != nil {
-		return err
-	}
+    if err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // Deploy deploys to a particular machine called test 2
 func Deploy(Name string) error {
-	var task natural_deploy.Task
-	task.Name = Name
-	task.TaskFile = "run.sh"
-	task.KillTaskFile = "exit.sh"
-	task.DeployMachine = "p2prc-node-1-tGGl3RH"
+    var task natural_deploy.Task
+    task.Name = Name
+    task.TaskFile = "run.sh"
+    task.KillTaskFile = "exit.sh"
+    task.DeployMachine = "p2prc-node-1-tGGl3RH"
 
-	var err error
+    var err error
 
-	// Allocate ports
-	var port natural_deploy.Ports
-	port.Port = "8034"
-	port.DomainName = "nd.akilan.io"
-	task.ExposedPorts = append(task.ExposedPorts, &port)
+    // Allocate ports
+    var port natural_deploy.Ports
+    port.Port = "8034"
+    port.DomainName = "nd.akilan.io"
+    task.ExposedPorts = append(task.ExposedPorts, &port)
 
-	// Check if the linux binary to run is compiled
-	_, err = os.Stat("Deploy-Linux")
-	if err != nil {
-		err = SelfCompileLinux()
-		if err != nil {
-			return err
-		}
-	}
+    // Check if the linux binary to run is compiled
+    _, err = os.Stat("Deploy-Linux")
+    if err != nil {
+        err = SelfCompileLinux()
+        if err != nil {
+            return err
+        }
+    }
 
-	fmt.Println("Uploading Deploy-Linux.....")
+    fmt.Println("Uploading Deploy-Linux.....")
 
-	// Sends files for setup
-	err = task.SendFile("Deploy-Linux")
-	if err != nil {
-		return err
-	}
+    // Sends files for setup
+    err = task.SendFile("Deploy-Linux")
+    if err != nil {
+        return err
+    }
 
-	fmt.Println("Uploading index.html.....")
-	err = task.SendFile("index.html")
-	if err != nil {
-		return err
-	}
+    fmt.Println("Uploading index.html.....")
+    err = task.SendFile("index.html")
+    if err != nil {
+        return err
+    }
 
-	fmt.Println("Uploading style.css.....")
-	err = task.SendFile("style.css")
-	if err != nil {
-		return err
-	}
+    fmt.Println("Uploading style.css.....")
+    err = task.SendFile("style.css")
+    if err != nil {
+        return err
+    }
 
-	fmt.Println("Uploading main picture")
-	err = task.SendFile("NaturalDeploy.png")
-	if err != nil {
-		return err
-	}
+    fmt.Println("Uploading main picture")
+    err = task.SendFile("NaturalDeploy.png")
+    if err != nil {
+        return err
+    }
 
-	fmt.Println("Uploading style.css.....")
-	err = task.SendFile("style.css")
-	if err != nil {
-		return err
-	}
+    fmt.Println("Uploading style.css.....")
+    err = task.SendFile("style.css")
+    if err != nil {
+        return err
+    }
 
-	fmt.Println("Starting to run the task.....")
-	// Creates and runs the task
-	err = task.CreateTask()
-	if err != nil {
-		return err
-	}
+    fmt.Println("Uploading high-overview.jpeg.....")
+    err = task.SendFile("high-overview.jpeg")
+    if err != nil {
+        return err
+    }
 
-	// Test to print out the process
-	ListProcess()
+    fmt.Println("Uploading sample-program.jpeg.....")
+    err = task.SendFile("sample-program.jpeg")
+    if err != nil {
+        return err
+    }
 
-	return nil
+    fmt.Println("Starting to run the task.....")
+    // Creates and runs the task
+    err = task.CreateTask()
+    if err != nil {
+        return err
+    }
+
+    // Test to print out the process
+    ListProcess()
+
+    return nil
 }
 
 // Update changes to the docs, If a new file is added then just add here as:
 // err = task.SendFile("<file name>")
 func Update(Name string) error {
-	task, avaliable := natural_deploy.ViewTasks(Name)
-	if !avaliable {
-		return errors.New("task not found")
-	}
+    task, avaliable := natural_deploy.ViewTasks(Name)
+    if !avaliable {
+        return errors.New("task not found")
+    }
 
-	// Always send the (index.html and the style.css
-	err := task.SendFile("index.html")
-	if err != nil {
-		return err
-	}
+    // Always send the (index.html and the style.css
+    err := task.SendFile("index.html")
+    if err != nil {
+        return err
+    }
 
-	err = task.SendFile("style.css")
-	if err != nil {
-		return err
-	}
+    err = task.SendFile("style.css")
+    if err != nil {
+        return err
+    }
 
-	return nil
+    // For a quick update
+    err = task.SendFile("high-overview.jpeg")
+    if err != nil {
+        return err
+    }
+
+    err = task.SendFile("sample-program.jpeg")
+    if err != nil {
+        return err
+    }
+
+    return nil
 }
 
 func ListProcess() {
-	natural_deploy.PrintTasks()
+    natural_deploy.PrintTasks()
 }
 
 func KillProcess(Name string) error {
-	task, avaliable := natural_deploy.ViewTasks(Name)
-	if !avaliable {
-		return errors.New("task not found")
-	}
+    task, avaliable := natural_deploy.ViewTasks(Name)
+    if !avaliable {
+        return errors.New("task not found")
+    }
 
-	err := task.KillTask()
-	if err != nil {
-		return err
-	}
+    err := task.KillTask()
+    if err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 func main() {
-	deploy := flag.Bool("deploy", false, "Deploy the webpage to the designated machine")
-	kill := flag.Bool("kill", false, "Kills the deployed task")
-	daemon := flag.Bool("daemon", false, "Starts the background process to learn about nodes in the network")
-	update := flag.Bool("update", false, "Updates the documentation content")
-	ls := flag.Bool("ls", false, "List processes")
-	port := flag.String("p", "8034", "port to serve on")
-	directory := flag.String("d", ".", "the directory of static file to host")
-	flag.Parse()
+    deploy := flag.Bool("deploy", false, "Deploy the webpage to the designated machine")
+    kill := flag.Bool("kill", false, "Kills the deployed task")
+    daemon := flag.Bool("daemon", false, "Starts the background process to learn about nodes in the network")
+    update := flag.Bool("update", false, "Updates the documentation content")
+    ls := flag.Bool("ls", false, "List processes")
+    port := flag.String("p", "8034", "port to serve on")
+    directory := flag.String("d", ".", "the directory of static file to host")
+    flag.Parse()
 
-	if *deploy {
-		err := Deploy("nd-docs")
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		return
-	}
+    if *deploy {
+        err := Deploy("nd-docs")
+        if err != nil {
+            fmt.Println(err)
+            return
+        }
+        return
+    }
 
-	if *update {
-		err := Update("nd-docs")
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		return
-	}
+    if *update {
+        err := Update("nd-docs")
+        if err != nil {
+            fmt.Println(err)
+            return
+        }
+        return
+    }
 
-	if *kill {
-		err := KillProcess("nd-docs")
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		return
-	}
+    if *kill {
+        err := KillProcess("nd-docs")
+        if err != nil {
+            fmt.Println(err)
+            return
+        }
+        return
+    }
 
-	if *daemon {
-		err := Daemon()
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		for {
+    if *daemon {
+        err := Daemon()
+        if err != nil {
+            fmt.Println(err)
+            return
+        }
+        for {
 
-		}
-	}
+        }
+    }
 
-	if *ls {
-		ListProcess()
-		return
-	}
+    if *ls {
+        ListProcess()
+        return
+    }
 
-	http.Handle("/", http.FileServer(http.Dir(*directory)))
+    http.Handle("/", http.FileServer(http.Dir(*directory)))
 
-	log.Printf("Serving %s on HTTP port: %s\n", *directory, *port)
-	log.Fatal(http.ListenAndServe(":"+*port, nil))
+    log.Printf("Serving %s on HTTP port: %s\n", *directory, *port)
+    log.Fatal(http.ListenAndServe(":"+*port, nil))
 }

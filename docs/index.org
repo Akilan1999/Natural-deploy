@@ -22,6 +22,12 @@ The aim of "Natural deploy" is to be library build on top of [[https://p2prc.aki
 custom tasks to your servers. This will gives you the flexibility to truly customise building your orchestration layer to
 run your programs across your cluster of servers which can be situated anywhere.
 
+* How does it work ?
+[[./high-overview.jpeg]]
+
+* Creating a task
+[[./sample-program.jpeg]]
+
 * How to install
 The only requirement if you are compiling from source is to have the Go compiler.
 We will show this example by demonstrating a simple example which consists of 3 computers:
