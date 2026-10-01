@@ -23,12 +23,309 @@ custom tasks to your servers. This will gives you the flexibility to truly custo
 run your programs across your cluster of servers which can be situated anywhere.
 
 * How does it work ?
+
+#+CAPTION: High overview of Natural deploy
+#+NAME:   fig:HOND
 [[./high-overview.jpeg]]
 
-* Creating a task
+The diagram above is the high level overview of the architecture in figure [[fig:HOND]]. What's important
+to node is that there are 3 nodes. The root node which is incharge of 
+using the [[https://p2prc.akilan.io/#nat-traversal][Proxy implementation]] 
+from P2PRC to help nodes escape NAT and traverse traffic through it. 
+
+ You will notice there is 2 other nodes. Node 1 which is the process 
+ manager node for deploying tasks across to node 2 (We will call it a worker
+ node). In reality you can have more than 1 worker node. The task is sent over
+ via an SSH connection which uses P2PRC to map the port to escape NAT. The 
+ SSH public key can be manually added to the worker node "authorizedkeys"
+file. Or else you can play around with P2PRC "BareMetal" mode (There is no 
+official documentation on this yet. Since it's still on the alpha stage).
+The idea of the baremetal mode is to automatically propogate to the task machines
+public key to nodes in your P2PRC network which run as "BareMetal".
+
+The task and worker nodes be enabled by just running just a single binary. P2PRC
+is also designed as library based P2P network which makes it modular by design. 
+This means if you want to expand your exsisting application to compile and 
+self-replication itself on another worker node. You can embed these rules within
+your application source code instead of having a seperate orchestrator program 
+like [[https://kubernetes.io/][Kubernetes]] and make you sane by calling functions rather than becoming a "YAML" developer. 
+
+Another keypoint to emphasise is that programmers need to rely less on tools like [[https://www.docker.com/][Docker]]
+and so make it simpler to run your program as a single binary and it's ideal to track 
+the process and kill your task with [[https://linux.die.net/man/1/pkill][pkill]] which runs on the kernel you installed on
+the machine you own. 
+
+* Creating a task through an example
+#+CAPTION: Structure of a task
+#+NAME:   fig:SOFAT
 [[./sample-program.jpeg]]
 
-* How to install
+The diagram above in figure [[fig:SOFAT]] shows the attributes required for a task
+and the it's structure when deployed to a worker node. This is created by an example
+which is deploying a simple static webpage and is also how the current webpage is deployed.
+
+Let's look at the first box on the top which consists of 3 files
+we are going to send over via a file transfer using the SSH connection. 
+The inner rectangle consists of the "./deploy" binary which will send itself 
+and the 3 files to the worker machine. This means the machine running the "./deploy"
+binary is the task machine. 
+
+When a task is deployed as the first time. Refer to the 2nd box which is node 2. 
+A folder called "p2prc-task/" with a sub folder consisting of the task name is created in
+the home directory. This means apart from a SSH connection nothing else is needed 
+for deploying a task. 
+
+The flags shown in figure [[fig:SOFAT]] will build on the code snippets
+as shown based on this [[https://github.com/Akilan1999/Natural-deploy/blob/master/docs/Deploy.go][file]]: 
+
+#+CAPTION: File structure of the task
+#+NAME:  Lis:FileStructure
+#+begin_src bash
+- Deploy.go (Source code to deploy)
+- compile.sh (Cross compile to linux deploy.go)
+- run.sh (Instruction of remote machine to start the process)
+- exit.sh (Instuction to kill on the remote machine the task)
+- Index.html, style.css, <diagrams / pictures> (Static assets to transfer over)
+#+end_src
+
+The listing [[Lis:FileStructure]] shows the main files required to deploy 
+the following documentation webpage. 
+
+#+CAPTION: Flags we are creating
+#+NAME:  Lis:Flags
+#+begin_src bash
+  -d string
+    	the directory of static file to host (default ".")
+  -daemon
+    	Starts the background process to learn about nodes in the network
+  -deploy
+    	Deploy the webpage to the designated machine
+  -kill
+    	Kills the deployed task
+  -ls
+    	List processes
+  -p string
+    	port to serve on (default "8034")
+  -update
+    	Updates the documentation content
+#+end_src
+
+#+CAPTION: Start P2PRC server mode using the -daemon flag (Worker node)
+#+NAME:  Lis:Daemon
+#+begin_src go
+func Daemon() error {
+    _, err := os.Stat("Task.lock")
+    if err != nil {
+        err := natural_deploy.CreateTaskMachine("<Your worker machine name>", nil)
+        if err != nil {
+            return err
+        }
+
+        os.Create("Task.lock")
+    }
+
+    err = natural_deploy.RunDaemon()
+    if err != nil {
+        return err
+    }
+
+    return nil
+}
+#+end_src
+
+The listing [[Lis:Daemon]] shows the only setup needed in the worker node to run it as background process 
+or daemon to broadcast itself in a zero configuration manner to the other task and worker nodes. There is 
+lock file created to ensure once the configurations is set to start daemon directly. 
+
+#+CAPTION: Deploy the task to the worker node -deploy flag (Task node)
+#+NAME:  Lis:Deploy
+#+begin_src go
+// Name: Name of the task 
+func Deploy(Name string) error {
+    // Creating the task type
+    var task natural_deploy.Task
+
+    // Setting the name of the task
+    task.Name = Name
+
+    // Points to start the process on the worker node
+    task.TaskFile = "run.sh"
+
+    // Points to kill the process on the worker node
+    task.KillTaskFile = "exit.sh"
+
+    // To the worker machine you want to deploy the task in
+    task.DeployMachine = "<Your worker machine name>"
+
+    var err error
+
+    // Allocate ports
+    var port natural_deploy.Ports
+    port.Port = "<TCP port in which your task will run>"
+    port.DomainName = "<Domain name you want to exposed your task TCP port to>"
+    task.ExposedPorts = append(task.ExposedPorts, &port)
+
+
+    // ------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------
+
+    // In this example this binary will cross compile 
+    // to the linux x86 architecture and deploy itself to worker node
+    // as server running on the <TCP port in which your task will run>. 
+
+    // Check if the linux binary to run is compiled
+    _, err = os.Stat("Deploy-Linux")
+    if err != nil {
+        err = SelfCompileLinux()
+        if err != nil {
+            return err
+        }
+    }
+
+    // ------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------
+
+    // Sends files for setup
+    err = task.SendFile("<path of file you would want to send over>")
+    if err != nil {
+        return err
+    }
+
+    .... n number of files to send
+
+    // Creates and runs the task on the worker node
+    err = task.CreateTask()
+    if err != nil {
+        return err
+    }
+
+    // Print out the processes created
+    ListProcess()
+
+    return nil
+}
+#+end_src
+
+#+CAPTION: Update the task to the worker node -update flag (Task node). In our case doing a few file transfer to update exsisting files. 
+#+NAME:  Lis:Update
+#+begin_src go
+// Name: <Task name>
+func Update(Name string) error {
+    task, avaliable := natural_deploy.ViewTasks(<Task name>)
+    if !avaliable {
+        return errors.New("task not found")
+    }
+
+    // Send the files you need to update or a new file
+    // to send over.
+    err := task.SendFile("<path of file you would want to send over>")
+    if err != nil {
+        return err
+    }
+
+    .... n number of files to send
+
+    return nil
+}
+#+end_src
+
+#+CAPTION: Kill the task to the worker node -kill flag (Task node). 
+#+NAME:  Lis:Kill
+#+begin_src go
+// Name: <Task name>
+func KillProcess(Name string) error {
+    task, avaliable := natural_deploy.ViewTasks(Name)
+    if !avaliable {
+        return errors.New("task not found")
+    }
+
+    err := task.KillTask()
+    if err != nil {
+        return err
+    }
+
+    return nil
+}
+#+end_src
+
+#+CAPTION: The main function (Task node). 
+#+NAME:  Lis:Main
+#+begin_src go
+func main() {
+    // ------------------------- Defining the flags --------------------------------
+    deploy := flag.Bool("deploy", false, "Deploy the webpage to the designated machine")
+    kill := flag.Bool("kill", false, "Kills the deployed task")
+    daemon := flag.Bool("daemon", false, "Starts the background process to learn about nodes in the network")
+    update := flag.Bool("update", false, "Updates the documentation content")
+    ls := flag.Bool("ls", false, "List processes")
+    port := flag.String("p", "8034", "port to serve on")
+    directory := flag.String("d", ".", "the directory of static file to host")
+    flag.Parse()
+    // ------------------------------------------------------------------------------
+
+    // ------------------------ Handlers for the flags ------------------------------
+
+    if *deploy {
+        err := Deploy("<task name>")
+        if err != nil {
+            fmt.Println(err)
+            return
+        }
+        return
+    }
+
+    if *update {
+        err := Update("<task name>")
+        if err != nil {
+            fmt.Println(err)
+            return
+        }
+        return
+    }
+
+    if *kill {
+        err := KillProcess("<task name>")
+        if err != nil {
+            fmt.Println(err)
+            return
+        }
+        return
+    }
+
+    if *daemon {
+        err := Daemon()
+        if err != nil {
+            fmt.Println(err)
+            return
+        }
+        for {
+
+        }
+    }
+
+    if *ls {
+        ListProcess()
+        return
+    }
+
+    // ------------------------------------------------------------------------------
+
+    // -------- part of the code executed on the task machine ------------
+
+    http.Handle("/", http.FileServer(http.Dir(*directory)))
+
+    log.Printf("Serving %s on HTTP port: %s\n", *directory, *port)
+    log.Fatal(http.ListenAndServe(":"+*port, nil))
+
+    // -------------------------------------------------------------------
+}
+#+end_src
+
+
+
+
+
+* How to install (Even simpler example)
 The only requirement if you are compiling from source is to have the Go compiler.
 We will show this example by demonstrating a simple example which consists of 3 computers:
 
