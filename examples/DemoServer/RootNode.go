@@ -14,7 +14,7 @@ func main() {
 	_, err := os.Stat("Root.lock")
 	if err != nil {
 		// Create the root node configuration
-		rootNode, err := natural_deploy.CreateRootNode("RootNode")
+		rootNode, err := natural_deploy.CreateRootNode("RootNode", "3242")
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

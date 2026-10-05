@@ -69,7 +69,7 @@ package main
 
 import (
     "fmt"
-    natural_deploy "github.com/Akilan1999/P2PRC-natural-deploy"
+    natural_deploy "github.com/Akilan1999/Natural-deploy"
     "github.com/Akilan1999/p2p-rendering-computation/client"
     "os"
 )
@@ -80,8 +80,9 @@ func main() {
     // if not configures the root node
     _, err := os.Stat("Root.lock")
     if err != nil {
-        // Create the root node configuration
-        rootNode, err := natural_deploy.CreateRootNode("RootNode")
+        // Create the root node configuration. Function parameter (Node name
+        // and port number)
+        rootNode, err := natural_deploy.CreateRootNode("RootNode","3244")
         if err != nil {
             fmt.Println(err)
             os.Exit(1)
@@ -147,7 +148,7 @@ This could for instance be an old laptop which you would want to bring back to l
 
 import (
 	"fmt"
-	natural_deploy "github.com/Akilan1999/P2PRC-natural-deploy"
+	natural_deploy "github.com/Akilan1999/Natural-deploy"
 	"os"
 )
 
@@ -212,7 +213,7 @@ host.
 
     import (
         "fmt"
-        natural_deploy "github.com/Akilan1999/P2PRC-natural-deploy"
+        natural_deploy "github.com/Akilan1999/Natural-deploy"
         "github.com/Akilan1999/p2p-rendering-computation/client"
         "github.com/Akilan1999/p2p-rendering-computation/p2p"
         "os"

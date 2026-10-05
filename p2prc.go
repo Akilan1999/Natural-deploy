@@ -32,7 +32,7 @@ func CommonSetup(MachineName string) error {
 	return nil
 }
 
-func CreateRootNode(MachineName string) (*p2p.IpAddress, error) {
+func CreateRootNode(MachineName string, PortNo string) (*p2p.IpAddress, error) {
 	err := CommonSetup(MachineName)
 	if err != nil {
 		return nil, err
@@ -45,6 +45,9 @@ func CreateRootNode(MachineName string) (*p2p.IpAddress, error) {
 
 	// Root nodes cannot be behind NAT
 	Config.BehindNAT = false
+	if PortNo != "" {
+		Config.ServerPort = PortNo
+	}
 
 	err = Config.WriteConfig()
 	if err != nil {
