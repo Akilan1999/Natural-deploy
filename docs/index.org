@@ -59,6 +59,13 @@ the machine you own.
 The only requirement if you are compiling from source is to have the Go compiler.
 We will show this example by demonstrating a simple example which consists of 3 computers:
 
+** General instruction to run
+It's important to use the P2PRC master branch for this library. 
+#+begin_src go
+go get github.com/Akilan1999/p2p-rendering-computation@master
+#+end_src
+
+
 ** The first computer (Root node):
 Which is has a static public address. This is required to traverse traffic for your computers
 behind NAT.
