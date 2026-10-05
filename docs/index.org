@@ -26,7 +26,7 @@ run your programs across your cluster of servers which can be situated anywhere.
 
 #+CAPTION: High overview of Natural deploy
 #+NAME:   fig:HOND
-[[./high-overview.jpeg]]
+[[./overview.drawio.png]]
 
 The diagram above is the high level overview of the architecture in figure [[fig:HOND]]. What's important
 to node is that there are 3 nodes. The root node which is incharge of 
@@ -58,7 +58,7 @@ the machine you own.
 * Creating a task through an example
 #+CAPTION: Structure of a task
 #+NAME:   fig:SOFAT
-[[./sample-program.jpeg]]
+[[./FileStructure.drawio.png]]
 
 The diagram above in figure [[fig:SOFAT]] shows the attributes required for a task
 and the it's structure when deployed to a worker node. This is created by an example
