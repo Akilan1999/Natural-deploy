@@ -264,12 +264,6 @@ host.
   ```
 
 
-## Documentation and setup
-- https://nd.akilan.io
-- [Motivation](https://nd.akilan.io/#org44f09d9)
-- [Getting Started](https://nd.akilan.io/#orgdcf5c56)
-
-
 
 <!-- ## The Solution:
 <img width="778" height="834" alt="Proposal" src="https://github.com/user-attachments/assets/4ce16823-3be2-4b89-924c-94331e9a627e" /> -->
