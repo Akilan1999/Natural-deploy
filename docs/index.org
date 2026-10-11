@@ -8,10 +8,10 @@
 ** Source code: https://github.com/Akilan1999/Natural-deploy
 * Motivation
 Have you ever felt when using any declarative type of program
-that is used for deployment. Its really unnatural to use (i.e you are a [[https://en.wikipedia.org/wiki/YAML][YAML]] developer). This is in
+that is used for deployment that it's really unnatural to use (i.e you are a [[https://en.wikipedia.org/wiki/YAML][YAML]] developer). This is in
 comparison to using any programming language [[https://en.wikipedia.org/wiki/Type_system#:~:text=Static%20type%20checking%20is%20the,properties%20for%20all%20possible%20inputs.][(Which has advanced static type checkers, error diagnosis etc...)]].
 
-The 2nd issue is it's really hard to setup servers and can only work with nodes which have public IPs. Most orchestration
+The 2nd issue is that it's really hard to setup servers and it only works with nodes which have public IPs. Most orchestration
 tools are built on the basis to use static IPs and fixed ports. 
 
 The effect of this move is that you can easily get vendor locked and you are less likely to choose the economical
@@ -28,7 +28,7 @@ run your programs across your cluster of servers which can be situated anywhere.
 #+NAME:   fig:HOND
 [[./overview.drawio.png]]
 
-The diagram above is the high level overview of the architecture in figure [[fig:HOND]]. What's important
+The diagram above is a high level overview of the architecture in figure [[fig:HOND]]. What's important
 to note is that there are 3 nodes. The root node which is incharge of 
 using the [[https://p2prc.akilan.io/#nat-traversal][Proxy implementation]] 
 from P2PRC to help nodes escape NAT. 
@@ -51,7 +51,7 @@ your application source code instead of having a seperate orchestrator program
 like [[https://kubernetes.io/][Kubernetes]] and makes you sane by calling functions rather than becoming a "YAML" developer. 
 
 Another keypoint to emphasise is that programmers need to rely less on tools like [[https://www.docker.com/][Docker]]
-and so we make it simpler to run your program as a single binary and it's ideal to track 
+and so we make it simpler to run your program as a single binary since it's ideal to track 
 the process. To kill your task it's as simple as [[https://linux.die.net/man/1/pkill][pkill]] which runs on the kernel you installed on
 the machine you own. 
 
@@ -133,7 +133,7 @@ func main() {
        "Latency": 0,
        "Download": 0,
        "Upload": 0,
-       "ServerPort": "8088", // The default port of the root node 
+       "ServerPort": "3244", // The default port of the root node 
        "UDPServerPort": "",
        "BareMetalSSHPort": "22",
        "NAT": false,
@@ -199,10 +199,10 @@ func main() {
  #+end_src
 
 ** The 3rd Computer (Task machine)
-This is can be your current laptop which can remotely deploy tasks to your self hosted server.
+This can be your current laptop which can remotely deploy tasks to your self hosted server.
 We are going to run a simple python server on the remote machine called "Test-Server". We will
-start the task which will deploy the python server from our local machine to the "Test-Server"
-machine which will then start the server and will internally call P2PRC function calls to provide
+start the task ,which will deploy the python server from our local machine to the "Test-Server"
+machine ,which will then start the server and will internally call P2PRC function calls to provide
 an static ip and port number from the Root node. Therefore escaping NAT which allows you to self
 host. 
 - Create the deploy script which we will call "test.sh" (The python server runs locally in 8000).
@@ -239,7 +239,7 @@ host.
             natural_deploy.CreateTaskMachine("Task", &rootnode) 
         }
 
-        // Create a 5 second delay from mapping port
+        // Create a 5 second delay for mapping port
         time.Sleep(5 * time.Second)
 
         // ------------------- Create a task -----------------
@@ -287,6 +287,10 @@ host.
         // Create a 10 second delay from mapping port
         time.Sleep(10 * time.Second)
 
+        // Print the task out
+        task.PrintTask()
+
+        // Below is to kill the task
         err = task.KillTask()
         if err != nil {
             fmt.Println(err)

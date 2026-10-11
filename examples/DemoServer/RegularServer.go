@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	natural_deploy "github.com/Akilan1999/Natural-deploy"
 	"os"
+
+	natural_deploy "github.com/Akilan1999/Natural-deploy"
 )
 
 func main() {
@@ -32,8 +33,8 @@ func main() {
 		// Create the root node to be added
 		var rootnode natural_deploy.RootNode
 		// make sure to fill in "<>" area with the appropriate information
-		rootnode.IPAddress = "<IPV4>"
-		rootnode.Port = "<ServerPort>"
+		rootnode.IPAddress = "217.76.63.222"
+		rootnode.Port = "3244"
 
 		err := natural_deploy.CreateRegularNode("Test-1", &rootnode)
 		if err != nil {
