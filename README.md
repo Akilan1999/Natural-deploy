@@ -1,5 +1,10 @@
 # Natural Deploy
-<img width="1920" height="1560" alt="NaturalDeploy" src="https://github.com/user-attachments/assets/9d3d2a0a-f24e-485d-8993-77ecf644bb9b" />
+
+<h1 align="center">
+  <br>
+  <a href=""><img src="https://github.com/user-attachments/assets/9d3d2a0a-f24e-485d-8993-77ecf644bb9b" alt="p2prc" width="400"></a>
+  <br>
+</h1>
 
 The aim of "Natural deploy" is to be a library which builds on top of [P2PRC](https://github.com/Akilan1999/p2p-rendering-computation/) to make it as easy as running a binary to deploy your custom tasks to your servers. This will gives you the flexibility to truly customise to build your own orchestration layer to run your programs across your cluster of servers which can be situated anywhere (i.e even behind NAT).
 
